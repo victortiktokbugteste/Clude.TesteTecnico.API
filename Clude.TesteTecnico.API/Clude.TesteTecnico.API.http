@@ -1,0 +1,6 @@
+@Clude.TesteTecnico.API_HostAddress = http://localhost:5078
+
+GET {{Clude.TesteTecnico.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
