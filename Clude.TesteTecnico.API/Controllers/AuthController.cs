@@ -1,5 +1,5 @@
-﻿using Clude.TesteTecnico.API.Infrastructure;
-using Microsoft.AspNetCore.Http;
+﻿using Clude.TesteTecnico.API.Application.Models;
+using Clude.TesteTecnico.API.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

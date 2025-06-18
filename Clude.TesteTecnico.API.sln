@@ -1,13 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36203.30 d17.14
+VisualStudioVersion = 17.14.36203.30
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clude.TesteTecnico.API", "Clude.TesteTecnico.API\Clude.TesteTecnico.API.csproj", "{DEA0D925-B520-44AC-8F60-E3D1C9B8F0D5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clude.TesteTecnico.API.Application", "Clude.TesteTecnico.API.Application\Clude.TesteTecnico.API.Application.csproj", "{715E37CD-184D-4FF9-8636-F2D0C2910DF0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clude.TesteTecnico.API.Infrastructure", "Clude.TesteTecnico.API.Infrastructure\Clude.TesteTecnico.API.Infrastructure.csproj", "{D6EC6AC5-056A-44D8-A50A-3E7B6FCB693B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clude.TesteTecnico.API.Domain", "Clude.TesteTecnico.API.Domain\Clude.TesteTecnico.API.Domain.csproj", "{CCECA812-6977-44B1-A73A-89B29C11E361}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clude.TesteTecnico.API.Tests", "Clude.TesteTecnico.API.Tests\Clude.TesteTecnico.API.Tests.csproj", "{0D7BDED9-B44A-41E7-BF0E-62682E7A0F3F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +31,14 @@ Global
 		{D6EC6AC5-056A-44D8-A50A-3E7B6FCB693B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6EC6AC5-056A-44D8-A50A-3E7B6FCB693B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6EC6AC5-056A-44D8-A50A-3E7B6FCB693B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCECA812-6977-44B1-A73A-89B29C11E361}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCECA812-6977-44B1-A73A-89B29C11E361}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCECA812-6977-44B1-A73A-89B29C11E361}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCECA812-6977-44B1-A73A-89B29C11E361}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D7BDED9-B44A-41E7-BF0E-62682E7A0F3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D7BDED9-B44A-41E7-BF0E-62682E7A0F3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D7BDED9-B44A-41E7-BF0E-62682E7A0F3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D7BDED9-B44A-41E7-BF0E-62682E7A0F3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

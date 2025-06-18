@@ -1,5 +1,15 @@
-using Clude.TesteTecnico.API.Infrastructure;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Clude.TesteTecnico.API.Application.Commands.Paciente;
+using Clude.TesteTecnico.API.Application.Commands.ProfissionalSaude;
+using Clude.TesteTecnico.API.Application.EntitiesValidators;
+using Clude.TesteTecnico.API.Application.Extensions;
+using Clude.TesteTecnico.API.Application.Interfaces;
+using Clude.TesteTecnico.API.Application.Models;
+using Clude.TesteTecnico.API.Domain.Entities;
+using Clude.TesteTecnico.API.Domain.Interfaces;
+using Clude.TesteTecnico.API.Infrastructure.Repositories;
+using Clude.TesteTecnico.API.Infrastructure.Services;
+using Clude.TesteTecnico.API.Middleware;
+using FluentValidation;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -13,8 +23,8 @@ builder.Services.Configure<JwtSettings>(
 var jwtSettings = builder.Configuration
     .GetSection("JwtSettings").Get<JwtSettings>();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -22,22 +32,42 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
         };
     });
 
 
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(AdicionarPacienteCommand).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(AdicionarProfissionalSaudeCommand).Assembly);
+});
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddSingleton<ILogService, LogService>();
+builder.Services.AddScoped<IPacienteRepository, PacienteRepository>();
+builder.Services.AddScoped<IProfissionalSaudeRepository, ProfissionalSaudeRepository>();
+
+// Registra os validadores
+builder.Services.AddValidators();
+
 builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Clude.TestAPI",
+        Title = "Clude API",
         Version = "v1",
-        Description = "API para o teste t�cnico da Clude"
+        Description = "API da Clude",
+        Contact = new OpenApiContact
+        {
+            Name = "Clude",
+            Email = "contato@clude.com"
+        }
     });
 
     c.AddSecurityDefinition("Bearer", new()
@@ -57,10 +87,19 @@ builder.Services.AddSwaggerGen(c =>
             {
                 Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
             },
-            new string[] {}
+            Array.Empty<string>()
         }
     });
 
+    // Inclui os comentários XML na documentação
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    if (File.Exists(xmlPath))
+    {
+        c.IncludeXmlComments(xmlPath);
+    }
+
+    c.EnableAnnotations();
 });
 
 var app = builder.Build();
@@ -68,15 +107,28 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwagger(c =>
+    {
+        c.SerializeAsV2 = false;
+    });
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Clude API V1");
+        c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+    });
 }
 
+
 app.UseHttpsRedirection();
+
+// Adiciona o middleware de log de autenticação após a autenticação
+app.UseMiddleware<AuthenticationLoggingMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.Run();
