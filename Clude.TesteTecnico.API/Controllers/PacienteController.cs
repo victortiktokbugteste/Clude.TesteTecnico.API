@@ -68,5 +68,21 @@ namespace Clude.TesteTecnico.API.Controllers
             var sucesso = await _mediator.Send(new DeletarPacienteCommand(id));
             return sucesso ? NoContent() : NotFound();
         }
+
+        [HttpGet("/get-todos-pacientes")]
+        [SwaggerOperation(
+            Summary = "Lista todos os pacientes",
+            Description = "Retorna todos os pacientes cadastrados no sistema"
+        )]
+        public async Task<ActionResult<List<Paciente>>> BuscarTodosPacientes()
+        {
+            var pacientes = await _mediator.Send(new BuscarTodosPacientesQuery());
+
+            if (pacientes == null || pacientes.Count == 0)
+                return NoContent();
+
+            return Ok(pacientes);
+        }
+
     }
 }

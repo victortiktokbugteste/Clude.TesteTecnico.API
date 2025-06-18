@@ -69,5 +69,20 @@ namespace Clude.TesteTecnico.API.Controllers
             var sucesso = await _mediator.Send(new DeletarProfissionalSaudeCommand(id));
             return sucesso ? NoContent() : NotFound();
         }
+
+        [HttpGet("/get-todos-profissionais-saude")]
+        [SwaggerOperation(
+        Summary = "Lista todos os profissionais de saúde",
+        Description = "Retorna todos os profissionais de saúde cadastrados no sistema"
+        )]
+        public async Task<ActionResult<List<Paciente>>> BuscarTodosProfissionaisSaude()
+        {
+            var profissionaisSaude = await _mediator.Send(new BuscarTodosProfissionaisSaudeQuery());
+
+            if (profissionaisSaude == null || profissionaisSaude.Count == 0)
+                return NoContent();
+
+            return Ok(profissionaisSaude);
+        }
     }
 }

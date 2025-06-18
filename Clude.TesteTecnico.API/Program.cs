@@ -52,8 +52,18 @@ builder.Services.AddScoped<IProfissionalSaudeRepository, ProfissionalSaudeReposi
 
 // Registra os validadores
 builder.Services.AddValidators();
-
 builder.Services.AddControllers();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:3000")
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -118,6 +128,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+
+app.UseCors("AllowReactApp");
 
 app.UseHttpsRedirection();
 

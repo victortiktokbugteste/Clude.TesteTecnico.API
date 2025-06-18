@@ -44,6 +44,14 @@ namespace Clude.TesteTecnico.API.Infrastructure.Repositories
             return await db.ExecuteScalarAsync<bool>(sql, new { Id = id });
         }
 
+        public async Task<List<ProfissionalSaude>> GetAllAsync()
+        {
+            using var db = new SqlConnection(_connectionString);
+            var sql = "SELECT * FROM ProfissionalSaude";
+            var pacientes = await db.QueryAsync<ProfissionalSaude>(sql);
+            return pacientes.ToList();
+        }
+
         public async Task<ProfissionalSaude> GetByIdAsync(int id)
         {
             using var db = new SqlConnection(_connectionString);

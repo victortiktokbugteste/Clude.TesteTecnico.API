@@ -10,5 +10,6 @@ namespace Clude.TesteTecnico.API.Domain.Interfaces
         Task DeleteAsync(int id);
         Task<T> GetByIdAsync(int id);
         Task<bool> ExistsAsync(int id);
+        Task<List<T>> GetAllAsync();
     }
 } 
