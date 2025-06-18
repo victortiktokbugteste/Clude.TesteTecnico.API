@@ -45,6 +45,17 @@ namespace Clude.TesteTecnico.API.Infrastructure.Repositories
             return await db.ExecuteScalarAsync<bool>(sql, new { Id = id });
         }
 
+        public async Task<bool> ExistsByCpfAsync(string cpf, int? id = 0)
+        {
+            using var db = new SqlConnection(_connectionString);
+            var sql = "SELECT COUNT(1) FROM Paciente WHERE Cpf = @cpf ";
+
+            if (id > 0)
+                sql += " AND Id <> @id ";
+
+            return await db.ExecuteScalarAsync<bool>(sql, new { cpf = cpf, Id = id });
+        }
+
         public async Task<List<Paciente>> GetAllAsync()
         {
             using var db = new SqlConnection(_connectionString);

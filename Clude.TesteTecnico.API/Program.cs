@@ -1,3 +1,4 @@
+using Clude.TesteTecnico.API.Application.Commands.Agendamento;
 using Clude.TesteTecnico.API.Application.Commands.Paciente;
 using Clude.TesteTecnico.API.Application.Commands.ProfissionalSaude;
 using Clude.TesteTecnico.API.Application.EntitiesValidators;
@@ -42,6 +43,7 @@ builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(AdicionarPacienteCommand).Assembly);
     cfg.RegisterServicesFromAssembly(typeof(AdicionarProfissionalSaudeCommand).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(AdicionarAgendamentoCommand).Assembly);
 });
 
 builder.Services.AddAuthorization();
@@ -49,6 +51,8 @@ builder.Services.AddAuthorization();
 builder.Services.AddSingleton<ILogService, LogService>();
 builder.Services.AddScoped<IPacienteRepository, PacienteRepository>();
 builder.Services.AddScoped<IProfissionalSaudeRepository, ProfissionalSaudeRepository>();
+builder.Services.AddScoped<IAgendamentoRepository, AgendamentoRepository>();
+
 
 // Registra os validadores
 builder.Services.AddValidators();

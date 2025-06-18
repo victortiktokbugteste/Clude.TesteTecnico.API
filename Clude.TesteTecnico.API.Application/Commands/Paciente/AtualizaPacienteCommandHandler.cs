@@ -39,7 +39,7 @@ namespace Clude.TesteTecnico.API.Application.Commands.Paciente
                 var existsPaciente = await _pacienteRepository.GetByIdAsync(request.Id);
                 if (existsPaciente == null || existsPaciente.Id == 0)
                 {
-                    throw new NotFoundException("Paciente não encontrado!");
+                    throw new SingleErrorException("Paciente não encontrado!");
                 }
 
 
@@ -48,6 +48,11 @@ namespace Clude.TesteTecnico.API.Application.Commands.Paciente
                 {
                     throw new ValidationException(validationResult.Errors);
                 }
+
+                //Aqui eu valido se exste outro paciente que não seja o mesmo, e que tenha o mesmo cpf.
+                var existsPacienteWithSameCpf = await _pacienteRepository.ExistsByCpfAsync(paciente.Cpf, paciente.Id);
+                if (existsPacienteWithSameCpf)
+                    throw new SingleErrorException("Já existe um paciente com esse CPF.");
 
 
                 await _pacienteRepository.UpdateAsync(paciente);

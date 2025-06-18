@@ -57,7 +57,7 @@ namespace Clude.TesteTecnico.API.Tests.Commands.Paciente
                 .Setup(r => r.GetByIdAsync(command.Id))
                 .ReturnsAsync((PacienteEntity)null);
 
-            var exception = await Assert.ThrowsAsync<NotFoundException>(() => 
+            var exception = await Assert.ThrowsAsync<SingleErrorException>(() => 
                 _handler.Handle(command, CancellationToken.None));
 
             Assert.Contains("Paciente não encontrado", exception.Message);

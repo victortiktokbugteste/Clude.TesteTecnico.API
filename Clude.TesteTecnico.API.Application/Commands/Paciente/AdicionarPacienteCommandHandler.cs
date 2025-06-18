@@ -1,10 +1,11 @@
-using MediatR;
-using Clude.TesteTecnico.API.Domain.Interfaces;
 using Clude.TesteTecnico.API.Application.Commands.Paciente.Responses;
-using PacienteEntity = Clude.TesteTecnico.API.Domain.Entities.Paciente;
 using Clude.TesteTecnico.API.Application.EntitiesValidators;
+using Clude.TesteTecnico.API.Application.Exceptions;
+using Clude.TesteTecnico.API.Domain.Interfaces;
 using FluentValidation;
+using MediatR;
 using System.Transactions;
+using PacienteEntity = Clude.TesteTecnico.API.Domain.Entities.Paciente;
 
 namespace Clude.TesteTecnico.API.Application.Commands.Paciente
 {
@@ -33,12 +34,16 @@ namespace Clude.TesteTecnico.API.Application.Commands.Paciente
                     BirthDate = request.BirthDate
                 };
 
-                // Realiza a validação
                 var validationResult = await _validator.ValidateAsync(paciente, cancellationToken);
                 if (!validationResult.IsValid)
                 {
                     throw new ValidationException(validationResult.Errors);
                 }
+
+                var existsPacienteWithSameCpf = await _pacienteRepository.ExistsByCpfAsync(paciente.Cpf);
+                if (existsPacienteWithSameCpf)
+                    throw new SingleErrorException("J� existe um paciente com esse CPF.");
+
 
                 var pacienteCriado = await _pacienteRepository.AddAsync(paciente);
                 scope.Complete();

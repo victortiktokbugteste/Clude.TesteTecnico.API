@@ -28,7 +28,7 @@ namespace Clude.TesteTecnico.API.Application.Commands.Paciente
                 var existsPaciente = await _pacienteRepository.GetByIdAsync(request.Id);
                 if (existsPaciente == null || existsPaciente.Id == 0)
                 {
-                    throw new NotFoundException("Paciente não encontrado!");
+                    throw new SingleErrorException("Paciente não encontrado!");
                 }
 
                 await _pacienteRepository.DeleteAsync(request.Id);

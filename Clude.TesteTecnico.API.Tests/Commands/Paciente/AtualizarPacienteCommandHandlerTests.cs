@@ -66,7 +66,7 @@ namespace Clude.TesteTecnico.API.Tests.Commands.Paciente
         {
 
             var command = new AtualizaPacienteCommand(nome, cpf, DateTime.Parse(dataNascimento), id);
-            var exception = await Assert.ThrowsAsync<NotFoundException>(() => 
+            var exception = await Assert.ThrowsAsync<SingleErrorException>(() => 
                 _handler.Handle(command, CancellationToken.None));
 
             Assert.Contains("Paciente não encontrado!", exception.Message);

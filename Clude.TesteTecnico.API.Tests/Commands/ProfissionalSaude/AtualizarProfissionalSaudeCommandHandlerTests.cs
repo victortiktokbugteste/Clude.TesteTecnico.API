@@ -67,7 +67,7 @@ namespace Clude.TesteTecnico.API.Tests.Commands.ProfissionalSaude
         {
 
             var command = new AtualizaProfissionalSaudeCommand(nome, cpf, crm, id);
-            var exception = await Assert.ThrowsAsync<NotFoundException>(() =>
+            var exception = await Assert.ThrowsAsync<SingleErrorException>(() =>
                 _handler.Handle(command, CancellationToken.None));
 
             Assert.Contains("Profissional de saúde não encontrado!", exception.Message);

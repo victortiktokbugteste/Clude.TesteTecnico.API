@@ -1,12 +1,7 @@
-﻿using Swashbuckle.AspNetCore.Annotations;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Swashbuckle.AspNetCore.Annotations;
 
-namespace Clude.TesteTecnico.API.Infrastructure
+namespace Clude.TesteTecnico.API.Infrastructure.Models
 {
     public class LoginModel
     {
@@ -18,4 +13,4 @@ namespace Clude.TesteTecnico.API.Infrastructure
         [SwaggerSchema(Description = "Senha do usuário", Format = "password")]
         public string Password { get; set; }
     }
-}
+} 

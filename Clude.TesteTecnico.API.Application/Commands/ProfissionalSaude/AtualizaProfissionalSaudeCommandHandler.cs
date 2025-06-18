@@ -32,7 +32,7 @@ namespace Clude.TesteTecnico.API.Application.Commands.ProfissionalSaude
                 var existsProfissional = await _profissionalSaudeRepository.GetByIdAsync(request.Id);
                 if (existsProfissional == null || existsProfissional.Id == 0)
                 {
-                    throw new NotFoundException("Profissional de saúde não encontrado!");
+                    throw new SingleErrorException("Profissional de saúde não encontrado!");
                 }
 
                 var profissionalSaude = new ProfissionalSaudeEntity
@@ -43,12 +43,17 @@ namespace Clude.TesteTecnico.API.Application.Commands.ProfissionalSaude
                     Id = request.Id
                 };
 
-                // Realiza a validação
+
                 var validationResult = await _validator.ValidateAsync(profissionalSaude, cancellationToken);
                 if (!validationResult.IsValid)
                 {
                     throw new ValidationException(validationResult.Errors);
                 }
+
+                //Aqui eu valido se existe outro profissional de saúde que não seja o mesmo e que tenha o mesmo cpf e crm.
+                var existsProfissionalSaudeWithSameCpf = await _profissionalSaudeRepository.ExistsByCpfOrCRMAsync(profissionalSaude.Cpf, profissionalSaude.CRM, profissionalSaude.Id);
+                if (existsProfissionalSaudeWithSameCpf)
+                    throw new SingleErrorException("Já existe um profissional com esse CPF ou CRM.");
 
                 await _profissionalSaudeRepository.UpdateAsync(profissionalSaude);
                 scope.Complete();

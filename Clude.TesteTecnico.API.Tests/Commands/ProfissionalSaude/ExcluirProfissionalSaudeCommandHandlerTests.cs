@@ -56,7 +56,7 @@ namespace Clude.TesteTecnico.API.Tests.Commands.ProfissionalSaude
                 .Setup(r => r.GetByIdAsync(command.Id))
                 .ReturnsAsync((ProfissionalSaudeEntity)null);
 
-            var exception = await Assert.ThrowsAsync<NotFoundException>(() =>
+            var exception = await Assert.ThrowsAsync<SingleErrorException>(() =>
                 _handler.Handle(command, CancellationToken.None));
 
             Assert.Contains("Profissional de saúde não encontrado", exception.Message);

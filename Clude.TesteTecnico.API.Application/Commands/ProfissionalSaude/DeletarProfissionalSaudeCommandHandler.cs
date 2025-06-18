@@ -28,7 +28,7 @@ namespace Clude.TesteTecnico.API.Application.Commands.ProfissionalSaude
                 var existsProfissionalSaude = await _profissionalSaudeRepository.GetByIdAsync(request.Id);
                 if (existsProfissionalSaude == null || existsProfissionalSaude.Id == 0)
                 {
-                    throw new NotFoundException("Profissional de saúde não encontrado!");
+                    throw new SingleErrorException("Profissional de saúde não encontrado!");
                 }
 
                 await _profissionalSaudeRepository.DeleteAsync(request.Id);

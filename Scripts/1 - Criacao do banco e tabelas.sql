@@ -21,12 +21,15 @@ CreateDate DATETIME
 
 );
 
+
+
 CREATE TABLE Agendamento (
 
 Id int primary key identity(1,1),
 PacienteId INT,
 ProfissionalSaudeId INT,
 CreateDate DATETIME,
+ScheduleDate DATETIME,
 TempoDuracaoAtendimentoMinutos INT
 
 FOREIGN KEY (PacienteId) REFERENCES Paciente(Id),

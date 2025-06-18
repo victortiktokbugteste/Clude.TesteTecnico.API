@@ -1,11 +1,13 @@
-using MediatR;
-using Clude.TesteTecnico.API.Domain.Interfaces;
 using Clude.TesteTecnico.API.Application.Commands.Paciente.Responses;
-using ProfissionalSaudeEntity = Clude.TesteTecnico.API.Domain.Entities.ProfissionalSaude;
-using Clude.TesteTecnico.API.Application.EntitiesValidators;
-using FluentValidation;
-using System.Transactions;
 using Clude.TesteTecnico.API.Application.Commands.ProfissionalSaude.Responses;
+using Clude.TesteTecnico.API.Application.EntitiesValidators;
+using Clude.TesteTecnico.API.Application.Exceptions;
+using Clude.TesteTecnico.API.Domain.Entities;
+using Clude.TesteTecnico.API.Domain.Interfaces;
+using FluentValidation;
+using MediatR;
+using System.Transactions;
+using ProfissionalSaudeEntity = Clude.TesteTecnico.API.Domain.Entities.ProfissionalSaude;
 
 namespace Clude.TesteTecnico.API.Application.Commands.ProfissionalSaude
 {
@@ -34,12 +36,16 @@ namespace Clude.TesteTecnico.API.Application.Commands.ProfissionalSaude
                     CRM = request.CRM
                 };
 
-                // Realiza a validação
                 var validationResult = await _validator.ValidateAsync(profissionalSaude, cancellationToken);
                 if (!validationResult.IsValid)
                 {
                     throw new ValidationException(validationResult.Errors);
                 }
+
+                var existsProfissionalSaudeWithSameCpf = await _profissionalSaudeRepository.ExistsByCpfOrCRMAsync(profissionalSaude.Cpf, profissionalSaude.CRM);
+                if (existsProfissionalSaudeWithSameCpf)
+                    throw new SingleErrorException("J� existe um profissional com esse CPF ou CRM.");
+
 
                 var profissionalCriado = await _profissionalSaudeRepository.AddAsync(profissionalSaude);
                 scope.Complete();
