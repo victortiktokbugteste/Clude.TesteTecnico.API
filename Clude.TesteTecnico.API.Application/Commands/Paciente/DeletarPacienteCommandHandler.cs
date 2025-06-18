@@ -13,11 +13,14 @@ namespace Clude.TesteTecnico.API.Application.Commands.Paciente
     public class DeletarPacienteCommandHandler : IRequestHandler<DeletarPacienteCommand, bool>
     {
         private readonly IPacienteRepository _pacienteRepository;
+        private readonly IAgendamentoRepository _agendamentoRepository;
 
         public DeletarPacienteCommandHandler(
-            IPacienteRepository pacienteRepository)
+            IPacienteRepository pacienteRepository, 
+            IAgendamentoRepository agendamentoRepository)
         {
             _pacienteRepository = pacienteRepository;
+            _agendamentoRepository = agendamentoRepository;
         }
 
         public async Task<bool> Handle(DeletarPacienteCommand request, CancellationToken cancellationToken)
@@ -30,6 +33,9 @@ namespace Clude.TesteTecnico.API.Application.Commands.Paciente
                 {
                     throw new SingleErrorException("Paciente não encontrado!");
                 }
+
+                //Vou deletar as consultas ligadas ao paciente antes de fazer a exclusão dele.
+                await _agendamentoRepository.DeletarConsultasDoPaciente(request.Id);
 
                 await _pacienteRepository.DeleteAsync(request.Id);
                 scope.Complete();

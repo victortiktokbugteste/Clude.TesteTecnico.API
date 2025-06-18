@@ -42,7 +42,7 @@ namespace Clude.TesteTecnico.API.Application.Commands.Paciente
 
                 var existsPacienteWithSameCpf = await _pacienteRepository.ExistsByCpfAsync(paciente.Cpf);
                 if (existsPacienteWithSameCpf)
-                    throw new SingleErrorException("Já existe um paciente com esse CPF.");
+                    throw new SingleErrorException("Ja existe um paciente com esse CPF.");
 
 
                 var pacienteCriado = await _pacienteRepository.AddAsync(paciente);

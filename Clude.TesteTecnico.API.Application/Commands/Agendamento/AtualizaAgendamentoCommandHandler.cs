@@ -31,25 +31,50 @@ namespace Clude.TesteTecnico.API.Application.Commands.Agendamento
             using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             try
             {
-                //Aqui eu deixo ele trocar apenas o dia do agendamento dele. Caso haja disponibilidade
-                var agendamento = new AgendamentoEntity
-                {
-                    ScheduleDate = request.ScheduleDate,
-                    Id = request.Id
-                };
-
                 var existsAgendamento = await _agendamentoRepository.GetByIdAsync(request.Id);
                 if (existsAgendamento == null || existsAgendamento.Id == 0)
                 {
                     throw new SingleErrorException("Agendamento não encontrado!");
                 }
 
+                //Aqui eu deixo ele trocar apenas o dia/horário do agendamento dele. Caso haja disponibilidade
+                var agendamento = new AgendamentoEntity
+                {
+                    ScheduleDate = request.ScheduleDate.GetValueOrDefault(),
+                    Id = request.Id
+                };
 
                 var validationResult = await _validator.ValidateAsync(agendamento, cancellationToken);
                 if (!validationResult.IsValid)
                 {
                     throw new ValidationException(validationResult.Errors);
                 }
+
+                //Preciso validar se o paciente já tem uma consulta com esse mesmo profissional no dia.
+                var existsAgendamentoWithScheduleDate = await _agendamentoRepository.ExistsByPacienteAndProfissionalPerDayAsync(request.PacienteId, request.ProfissionalSaudeId, agendamento.ScheduleDate, agendamento.Id);
+                if (existsAgendamentoWithScheduleDate)
+                    throw new SingleErrorException("Ja existe um agendamento para esse paciente com esse mesmo profissional nesse mesmo dia.");
+
+
+                //Preciso validar se o profissional já possui uma consulta naquele horário.
+                var agendamentosDoDiaProfissionalSaude = await _agendamentoRepository.GetAgendamentosByProfissionalAndDateAsync(agendamento.ProfissionalSaudeId, agendamento.ScheduleDate);
+
+                // Verifica sobreposição de horários
+                var horarioInicio = agendamento.ScheduleDate;
+                var horarioFim = horarioInicio.AddMinutes(agendamento.TempoDuracaoAtendimentoMinutos);
+
+                var temSobreposicao = agendamentosDoDiaProfissionalSaude.Any(a =>
+                {
+                    var inicioExistente = a.ScheduleDate;
+                    var fimExistente = inicioExistente.AddMinutes(a.TempoDuracaoAtendimentoMinutos);
+
+                    return (horarioInicio >= inicioExistente && horarioInicio < fimExistente) || 
+                           (horarioFim > inicioExistente && horarioFim <= fimExistente) || 
+                           (horarioInicio <= inicioExistente && horarioFim >= fimExistente); 
+                });
+
+                if (temSobreposicao)
+                    throw new SingleErrorException("Já existe um agendamento para este profissional neste horário.");
 
                 await _agendamentoRepository.UpdateAsync(agendamento);
                 scope.Complete();

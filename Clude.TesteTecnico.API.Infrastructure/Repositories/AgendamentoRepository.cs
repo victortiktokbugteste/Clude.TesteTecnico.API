@@ -45,7 +45,6 @@ namespace Clude.TesteTecnico.API.Infrastructure.Repositories
                        paciente.Cpf as Paciente_Cpf,
                        profissionalSaude.Id as Profissional_Id,
                        profissionalSaude.Name as Profissional_Name,
-                       profissionalSaude.Cpf as Profissional_Cpf,
                        profissionalSaude.CRM as Profissional_CRM
                 FROM Agendamento agendamento
                 LEFT JOIN Paciente paciente ON agendamento.PacienteId = paciente.Id
@@ -55,18 +54,19 @@ namespace Clude.TesteTecnico.API.Infrastructure.Repositories
             using var connection = new SqlConnection(_connectionString);
             var agendamentoMap = await connection.QueryAsync<Agendamento, PacienteMap, ProfissionalSaudeMap, Agendamento>(
                 sql,
-                (agendamento, pacienteMap, profissionalMap) =>
+                (agendamento, paciente, profissional) =>
                 {
                     agendamento.Paciente = new Paciente
                     {
-                        Name = pacienteMap.Paciente_Name,
-                        Cpf = pacienteMap.Paciente_Cpf
+                        Name = paciente.Paciente_Name,
+                        Cpf = paciente.Paciente_Cpf,
+                        Id = paciente.Paciente_Id
                     };
                     agendamento.ProfissionalSaude = new ProfissionalSaude
                     {
-                        Name = profissionalMap.Profissional_Name,
-                        Cpf = profissionalMap.Profissional_Cpf,
-                        CRM = profissionalMap.Profissional_CRM
+                        Name = profissional.Profissional_Name,
+                        Cpf = profissional.Profissional_Cpf,
+                        CRM = profissional.Profissional_CRM
                     };
                     return agendamento;
                 },
@@ -86,34 +86,34 @@ namespace Clude.TesteTecnico.API.Infrastructure.Repositories
                        paciente.Cpf as Paciente_Cpf,
                        profissionalSaude.Id as Profissional_Id,
                        profissionalSaude.Name as Profissional_Name,
-                       profissionalSaude.Cpf as Profissional_Cpf,
                        profissionalSaude.CRM as Profissional_CRM
                 FROM Agendamento agendamento
                 LEFT JOIN Paciente paciente ON agendamento.PacienteId = paciente.Id
                 LEFT JOIN ProfissionalSaude profissionalSaude ON agendamento.ProfissionalSaudeId = profissionalSaude.Id ";
 
             using var connection = new SqlConnection(_connectionString);
-            var agendamentoMap = await connection.QueryAsync<Agendamento, PacienteMap, ProfissionalSaudeMap, Agendamento>(
+            var agendamentosMap = await connection.QueryAsync<Agendamento, PacienteMap, ProfissionalSaudeMap, Agendamento>(
                 sql,
-                (agendamento, pacienteMap, profissionalMap) =>
+                (agendamento, paciente, profissional) =>
                 {
                     agendamento.Paciente = new Paciente
                     {
-                        Name = pacienteMap.Paciente_Name,
-                        Cpf = pacienteMap.Paciente_Cpf
+                        Name = paciente.Paciente_Name,
+                        Cpf = paciente.Paciente_Cpf,
+                        Id = paciente.Paciente_Id
                     };
                     agendamento.ProfissionalSaude = new ProfissionalSaude
                     {
-                        Name = profissionalMap.Profissional_Name,
-                        Cpf = profissionalMap.Profissional_Cpf,
-                        CRM = profissionalMap.Profissional_CRM
+                        Name = profissional.Profissional_Name,
+                        Cpf = profissional.Profissional_Cpf,
+                        CRM = profissional.Profissional_CRM
                     };
                     return agendamento;
                 },
                 splitOn: "Paciente_Id,Profissional_Id"
             );
 
-            return agendamentoMap.ToList();
+            return agendamentosMap.ToList();
         }
 
         public async Task<Agendamento> AddAsync(Agendamento entity)
@@ -135,11 +135,7 @@ namespace Clude.TesteTecnico.API.Infrastructure.Repositories
             using var db = new SqlConnection(_connectionString);
             var sql = @"
                 UPDATE Agendamento 
-                SET PacienteId = @PacienteId,
-                    ProfissionalSaudeId = @ProfissionalSaudeId,
-                    CreateDate = @CreateDate,
-                    ScheduleDate = @ScheduleDate,
-                    TempoDuracaoAtendimentoMinutos = @TempoDuracaoAtendimentoMinutos
+                SET ScheduleDate = @ScheduleDate
                 WHERE Id = @Id";
 
             await db.ExecuteAsync(sql, entity);
@@ -158,6 +154,83 @@ namespace Clude.TesteTecnico.API.Infrastructure.Repositories
             using var db = new SqlConnection(_connectionString);
             var sql = "SELECT COUNT(1) FROM Agendamento WHERE Id = @Id";
             return await db.ExecuteScalarAsync<bool>(sql, new { Id = id });
+        }
+
+        public async Task<bool> ExistsByPacienteAndProfissionalPerDayAsync(int pacienteId, int profissionalId, DateTime scheduleDate, int? id = 0)
+        {
+            using var db = new SqlConnection(_connectionString);
+            var sql = @"SELECT COUNT(1) FROM Agendamento 
+                       WHERE PacienteId = @PacienteId 
+                       AND ProfissionalSaudeId = @ProfissionalSaudeId 
+                       AND CAST(ScheduleDate AS DATE) = CAST(@scheduleDate AS DATE) ";
+
+            if (id > 0)
+                sql += " AND Id <> @id ";
+
+            return await db.ExecuteScalarAsync<bool>(sql, new { PacienteId = pacienteId, ProfissionalSaudeId = profissionalId, scheduleDate = scheduleDate, Id = id });
+        }
+
+        public async Task<List<Agendamento>> GetAgendamentosByProfissionalAndDateAsync(int profissionalId, DateTime scheduleDate)
+        {
+            using var db = new SqlConnection(_connectionString);
+            var sql = "SELECT * FROM Agendamento WHERE ProfissionalSaudeId = @ProfissionalSaudeId AND CONVERT(date, ScheduleDate) = CONVERT(date, @scheduleDate) ";
+            var agendamentos = await db.QueryAsync<Agendamento>(sql, new { ProfissionalSaudeId = profissionalId, scheduleDate = scheduleDate });
+            return agendamentos.ToList();
+        }
+
+        public async Task<List<Agendamento>> GetAgendamentosByProfissional(int profissionalId)
+        {
+            var sql = @"
+                SELECT agendamento.*, 
+                       paciente.Id as Paciente_Id, 
+                       paciente.Name as Paciente_Name,
+                       paciente.Cpf as Paciente_Cpf,
+                       profissionalSaude.Id as Profissional_Id,
+                       profissionalSaude.Name as Profissional_Name,
+                       profissionalSaude.CRM as Profissional_CRM
+                FROM Agendamento agendamento
+                LEFT JOIN Paciente paciente ON agendamento.PacienteId = paciente.Id
+                LEFT JOIN ProfissionalSaude profissionalSaude ON agendamento.ProfissionalSaudeId = profissionalSaude.Id 
+                WHERE agendamento.ProfissionalSaudeId = @ProfissionalSaudeId ";
+
+            using var connection = new SqlConnection(_connectionString);
+            var agendamentosMap = await connection.QueryAsync<Agendamento, PacienteMap, ProfissionalSaudeMap, Agendamento>(
+                sql,
+                (agendamento, paciente, profissional) =>
+                {
+                    agendamento.Paciente = new Paciente
+                    {
+                        Name = paciente.Paciente_Name,
+                        Cpf = paciente.Paciente_Cpf,
+                        Id = paciente.Paciente_Id
+                    };
+                    agendamento.ProfissionalSaude = new ProfissionalSaude
+                    {
+                        Name = profissional.Profissional_Name,
+                        Cpf = profissional.Profissional_Cpf,
+                        CRM = profissional.Profissional_CRM
+                    };
+                    return agendamento;
+                },
+                 new { ProfissionalSaudeId = profissionalId },
+                splitOn: "Paciente_Id,Profissional_Id"
+            );
+
+            return agendamentosMap.ToList();
+        }
+
+        public async Task<bool> DeletarConsultasDoPaciente(int pacienteId)
+        {
+            using var db = new SqlConnection(_connectionString);
+            var sql = "DELETE FROM Agendamento WHERE PacienteId = @PacienteId";
+            return await db.ExecuteScalarAsync<bool>(sql, new { PacienteId = pacienteId });
+        }
+
+        public async Task<bool> DeletarConsultasDoProfissionalDeSaude(int profissionalSaudeId)
+        {
+            using var db = new SqlConnection(_connectionString);
+            var sql = "DELETE FROM Agendamento WHERE ProfissionalSaudeId = @ProfissionalSaudeId";
+            return await db.ExecuteScalarAsync<bool>(sql, new { ProfissionalSaudeId = profissionalSaudeId });
         }
     }
 }

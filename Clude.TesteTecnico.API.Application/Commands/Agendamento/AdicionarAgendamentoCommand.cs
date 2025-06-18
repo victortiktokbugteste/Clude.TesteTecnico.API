@@ -14,15 +14,15 @@ namespace Clude.TesteTecnico.API.Application.Commands.Agendamento
     public class AdicionarAgendamentoCommand : IRequest<AdicionarAgendamentoResponse>
     {
         [SwaggerSchema(Description = "ID do paciente para cadastro")]
-        public int PacienteId { get; set; }
+        public int? PacienteId { get; set; }
 
         [SwaggerSchema(Description = "ID do profissional para cadastro")]
-        public int ProfissionalSaudeId { get; set; }
+        public int? ProfissionalSaudeId { get; set; }
 
         [SwaggerSchema(Description = "Data de Agendamento para cadastro")]
-        public DateTime ScheduleDate { get; set; }
+        public DateTime? ScheduleDate { get; set; }
 
-        public AdicionarAgendamentoCommand(int pacienteId, int profissionalSaudeId, DateTime scheduleDate)
+        public AdicionarAgendamentoCommand(int? pacienteId, int? profissionalSaudeId, DateTime? scheduleDate)
         {
             PacienteId = pacienteId;
             ProfissionalSaudeId = profissionalSaudeId;

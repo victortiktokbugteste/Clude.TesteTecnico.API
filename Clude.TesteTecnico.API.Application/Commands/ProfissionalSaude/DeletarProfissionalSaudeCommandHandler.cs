@@ -13,11 +13,14 @@ namespace Clude.TesteTecnico.API.Application.Commands.ProfissionalSaude
     public class DeletarProfissionalSaudeCommandHandler : IRequestHandler<DeletarProfissionalSaudeCommand, bool>
     {
         private readonly IProfissionalSaudeRepository _profissionalSaudeRepository;
+        private readonly IAgendamentoRepository _agendamentoRepository;
 
         public DeletarProfissionalSaudeCommandHandler(
-            IProfissionalSaudeRepository profissionalSaudeRepository)
+            IProfissionalSaudeRepository profissionalSaudeRepository, 
+            IAgendamentoRepository agendamentoRepository)
         {
             _profissionalSaudeRepository = profissionalSaudeRepository;
+            _agendamentoRepository = agendamentoRepository;
         }
 
         public async Task<bool> Handle(DeletarProfissionalSaudeCommand request, CancellationToken cancellationToken)
@@ -30,6 +33,9 @@ namespace Clude.TesteTecnico.API.Application.Commands.ProfissionalSaude
                 {
                     throw new SingleErrorException("Profissional de saúde não encontrado!");
                 }
+
+                //Vou deletar as consultas ligadas ao profissional de saúde antes de fazer a exclusão dele.
+                await _agendamentoRepository.DeletarConsultasDoProfissionalDeSaude(request.Id);
 
                 await _profissionalSaudeRepository.DeleteAsync(request.Id);
                 scope.Complete();

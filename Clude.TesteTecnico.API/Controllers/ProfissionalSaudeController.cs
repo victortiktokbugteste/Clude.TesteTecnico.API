@@ -85,9 +85,9 @@ namespace Clude.TesteTecnico.API.Controllers
         Summary = "Lista todos os profissionais de saúde",
         Description = "Retorna todos os profissionais de saúde cadastrados no sistema"
         )]
-        [SwaggerResponse(200, "Profissionais de saúde encontrados com sucesso", typeof(BuscarPacienteResponse))]
+        [SwaggerResponse(200, "Profissionais de saúde encontrados com sucesso", typeof(BuscarProfissionalSaudeResponse))]
         [SwaggerResponse(400, "Erro ao buscar os profissionais de saúde")]
-        public async Task<ActionResult<List<Paciente>>> BuscarTodosProfissionaisSaude()
+        public async Task<ActionResult<List<ProfissionalSaude>>> BuscarTodosProfissionaisSaude()
         {
             var profissionaisSaude = await _mediator.Send(new BuscarTodosProfissionaisSaudeQuery());
 

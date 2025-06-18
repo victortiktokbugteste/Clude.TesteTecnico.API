@@ -44,7 +44,7 @@ namespace Clude.TesteTecnico.API.Application.Commands.ProfissionalSaude
 
                 var existsProfissionalSaudeWithSameCpf = await _profissionalSaudeRepository.ExistsByCpfOrCRMAsync(profissionalSaude.Cpf, profissionalSaude.CRM);
                 if (existsProfissionalSaudeWithSameCpf)
-                    throw new SingleErrorException("Já existe um profissional com esse CPF ou CRM.");
+                    throw new SingleErrorException("Ja existe um profissional com esse CPF ou CRM.");
 
 
                 var profissionalCriado = await _profissionalSaudeRepository.AddAsync(profissionalSaude);

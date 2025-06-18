@@ -4,6 +4,7 @@ using Clude.TesteTecnico.API.Application.Queries.Agendamento;
 using Clude.TesteTecnico.API.Application.Queries.Agendamento.Responses;
 using Clude.TesteTecnico.API.Application.Queries.Paciente;
 using Clude.TesteTecnico.API.Application.Queries.Paciente.Responses;
+using Clude.TesteTecnico.API.Application.Queries.ProfissionalSaude;
 using Clude.TesteTecnico.API.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -45,7 +46,7 @@ namespace Clude.TesteTecnico.API.Controllers
       )]
         [SwaggerResponse(201, "Agendamento atualizado com sucesso", typeof(BuscarAgendamentoResponse))]
         [SwaggerResponse(400, "Erro ao atualizar o agendamento")]
-        public async Task<ActionResult<Agendamento>> AtualizaPaciente([FromBody] AtualizaAgendamentoCommand command)
+        public async Task<ActionResult<Agendamento>> AtualizaAgendamento([FromBody] AtualizaAgendamentoCommand command)
         {
             var agendamento = await _mediator.Send(command);
             return CreatedAtAction(nameof(BuscarAgendamento), new { id = agendamento.Id }, agendamento);
@@ -91,6 +92,24 @@ namespace Clude.TesteTecnico.API.Controllers
         public async Task<ActionResult<List<Agendamento>>> BuscarTodosAgendamentos()
         {
             var agendamentos = await _mediator.Send(new BuscarTodosAgendamentosQuery());
+
+            if (agendamentos == null || agendamentos.Count == 0)
+                return NoContent();
+
+            return Ok(agendamentos);
+        }
+
+
+        [HttpGet("/get-agenda-profissional-saude/{id}")]
+        [SwaggerOperation(
+            Summary = "Lista o agendamento do profissional de saúde",
+            Description = "Retorna o agendamento do profissional de saúde cadastrados no sistema"
+            )]
+        [SwaggerResponse(200, "Agendamentos do profissional encontrados com sucesso", typeof(BuscarAgendamentoResponse))]
+        [SwaggerResponse(400, "Erro ao buscar os agendamentos do profissional de saúde")]
+        public async Task<ActionResult<List<Agendamento>>> BuscarAgendaProfissionalSaude([FromRoute] int id)
+        {
+            var agendamentos = await _mediator.Send(new BuscarAgendaProfissionalSaudeQuery(id));
 
             if (agendamentos == null || agendamentos.Count == 0)
                 return NoContent();
