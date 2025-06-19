@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  # SQL Server
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong@Passw0rd
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - clude-network
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourStrong@Passw0rd -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  # Script de inicialização do banco
+  init-db:
+    image: mcr.microsoft.com/mssql-tools:latest
+    command: >
+      /opt/mssql-tools/bin/sqlcmd 
+      -S sqlserver,1433 
+      -U sa 
+      -P YourStrong@Passw0rd 
+      -i /docker-entrypoint-initdb.d/init-db.sql
+    volumes:
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - clude-network
+    restart: "no"
+
+  # API Principal
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+      - "5001:443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=CludeTesteTecnicoAPI;User Id=sa;Password=YourStrong@Passw0rd;Trusted_Connection=False;Encrypt=False;TrustServerCertificate=True;
+      - ServiceBus__ConnectionString=Endpoint=sb://cludetesteapi.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=fO0cDSUNGNvkfVOQ1y9USgpVJ+mS7hrdy+ASbDRJJKk=
+      - ServiceBus__QueueName=emailsagendamento
+      - JwtSettings__SecretKey=9UAm/9sVBYdm3tq1vzjwIphzcRL59T4//i7h/8urzh5r6dCzcsAZuWKuWOP9fyhQcMKy/nY8L5IBlu+bExESdQ==
+    depends_on:
+      init-db:
+        condition: service_completed_successfully
+    networks:
+      - clude-network
+    restart: unless-stopped
+
+  # Worker Service (opcional - para processar mensagens do Service Bus)
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=CludeTesteTecnicoAPI;User Id=sa;Password=YourStrong@Passw0rd;Trusted_Connection=False;Encrypt=False;TrustServerCertificate=True;
+      - ServiceBus__ConnectionString=Endpoint=sb://cludetesteapi.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=fO0cDSUNGNvkfVOQ1y9USgpVJ+mS7hrdy+ASbDRJJKk=
+      - ServiceBus__QueueName=emailsagendamento
+    depends_on:
+      api:
+        condition: service_started
+    networks:
+      - clude-network
+    restart: unless-stopped
+
+volumes:
+  sqlserver_data:
+
+networks:
+  clude-network:
+    driver: bridge 

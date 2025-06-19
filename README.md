@@ -1,5 +1,7 @@
 # CLUDE TESTE TÉCNICO - API
 
+https://cludetesteapi.azurewebsites.net
+
 Esse projeto é responsável por processar toda busca, inserção, atualização, exclusão, de pacientes, profissionais de saúde, agendamentos da nossa clínica CLUDE.
 Ele é o motor da nossa aplicação, foi feito aplicando príncipios de Código Limpo, separando bem as responsabilidades de cada classe, 
 aplicando as regras de negócio que foram solicitadas no escopo do teste.
@@ -9,6 +11,35 @@ Também tem o projeto Clude.TesteTecnico.API.Tests com alguns testes implementad
 
 # Senha que é solicitada caso queira chamar o endpoint api/Auth/login
 username:admin, password:123
+
+## 🐳 Execução com Docker (Recomendado)
+
+Para facilitar a execução do projeto, criamos uma solução Docker completa. 
+
+### **Opção 1: Script Automático (Mais Fácil)**
+- **Windows**: Execute `start-docker.bat`
+- **Linux/Mac**: Execute `./start-docker.sh`
+
+### **Opção 2: Comandos Manuais**
+```bash
+# Clone o repositório
+git clone https://github.com/victortiktokbugteste/CludeTest.git
+cd CludeTest
+
+# Execute com Docker Compose
+docker-compose up --build -d
+```
+
+### **Acesso aos Serviços**
+- **API**: http://localhost:5000
+- **Swagger UI**: http://localhost:5000/swagger
+- **SQL Server**: localhost:1433
+
+### **Credenciais**
+- **Username**: `admin`
+- **Password**: `123`
+
+📖 **Instruções detalhadas**: Veja [DOCKER_INSTRUCTIONS.md](DOCKER_INSTRUCTIONS.md)
 
 # Decisões técnicas EXPLICATIVO
 
@@ -52,6 +83,7 @@ a mensagem é escrita na fila emailsagendamento, e criei o projeto WorkerService
 - **Azure Service Bus** - Mensageria
 - **Swagger/OpenAPI** - Documentação da API
 - **xUnit + Moq** - Testes unitários
+- **Docker** - Containerização da aplicação
 
 
 
@@ -109,17 +141,10 @@ a mensagem é escrita na fila emailsagendamento, e criei o projeto WorkerService
 
 # SCRIPTS DE BANCO
 Na pasta Scripts tem o script que cria o banco e as tabelas que usamos.
-Para conectar no banco: Server=tcp:cludeapi.database.windows.net,1433; Database=CludeTesteTecnicoAPI; User Id=victor; Password=@Dev2025;Trusted_Connection=False;Encrypt=True;
+Para conectar no banco do servidor sql: Server=tcp:cludeapi.database.windows.net,1433; Database=CludeTesteTecnicoAPI; User Id=victor; Password=@Dev2025;Trusted_Connection=False;Encrypt=True;
 
 
 # LOGS DE ERROS
 Ficam na tabela ApplicationMiddlewareLogError, ela intercepta os erros que aconteceram na nossa aplicação através dos nossos middlewares.
 
 
-## ⚙️ Como rodar localmente
-
-1. Clone o repositório: git clone https://github.com/victortiktokbugteste/CludeTest.git
-2. Tenha o node LTS 22 instalado em sua máquina
-3. Execute o seguinte comando dentro do diretório do projeto: npm install
-4. Execute o comando: npm start (ele vai rodar localmente)
-5. Hoje ele aponta todas as rotas para https://cludetesteapi.azurewebsites.net que é o backend que já publiquei. 
