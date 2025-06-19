@@ -103,43 +103,23 @@ docker-compose up --build -d
 - **xUnit + Moq** - Testes unitários
 - **Docker** - Containerização da aplicação
 
-## Arquitetura do projeto (Mermaid)
+## Arquitetura do Projeto
 
-```mermaid
-flowchart TD
-    A[Clude.TesteTecnico.API\n(Presentation Layer)]
-    B[Clude.TesteTecnico.API.Application\n(Application Layer)]
-    C[Clude.TesteTecnico.API.Domain\n(Domain Layer)]
-    D[Clude.TesteTecnico.API.Infrastructure\n(Infrastructure Layer)]
+- **Presentation Layer**
+  - Controllers: AuthController, PacienteController, ProfissionalSaudeController, AgendaController
+  - Middlewares: RequestLoggingMiddleware, AuthenticationLoggingMiddleware
 
-    subgraph API [ ]
-        A1[Controllers:\n- AuthController\n- PacienteController\n- ProfissionalSaudeController\n- AgendaController]
-        A2[Middlewares:\n- RequestLoggingMiddleware\n- AuthenticationLoggingMiddleware]
-        A1 --> A2
-    end
+- **Application Layer**
+  - Commands/Queries, Handlers, Validators, DTOs
+  - MediatR (CQRS Pattern), FluentValidation
 
-    subgraph Application [ ]
-        B1[Commands/Queries\n+ Handlers\n+ Validators\n+ DTOs]
-        B2[MediatR (CQRS Pattern)\nFluentValidation]
-        B1 --> B2
-    end
+- **Domain Layer**
+  - Entities: Agendamento, Paciente, ProfissionalSaude
+  - Interfaces: IRepository, IAgendamentoRepository, Domain Services & Utils
 
-    subgraph Domain [ ]
-        C1[Entities:\n- Agendamento\n- Paciente\n- ProfissionalSaude]
-        C2[Interfaces:\n- IRepository\n- IAgendamentoRepository\n- Domain Services & Utils]
-        C1 --> C2
-    end
-
-    subgraph Infrastructure [ ]
-        D1[Repositories\n+ Services\n+ External Integrations]
-        D2[Dapper (Data Access)\nAzure Service Bus\nLogging Services\nJWT Authentication]
-        D1 --> D2
-    end
-
-    A --> B
-    B --> C
-    C --> D
-```
+- **Infrastructure Layer**
+  - Repositories, Services, External Integrations
+  - Dapper (Data Access), Azure Service Bus, Logging Services, JWT Authentication
 
 # SCRIPTS DE BANCO
 Na pasta Scripts tem o script que cria o banco e as tabelas que usamos.
