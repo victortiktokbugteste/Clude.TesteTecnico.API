@@ -14,12 +14,14 @@ namespace Clude.TesteTecnico.API.Tests.Commands.ProfissionalSaude
     public class ExcluirProfissionalSaudeCommandHandlerTests
     {
         private readonly Mock<IProfissionalSaudeRepository> _profissionalSaudeRepositoryMock;
+        private readonly Mock<IAgendamentoRepository> _agendamentoRepository;
         private readonly DeletarProfissionalSaudeCommandHandler _handler;
 
         public ExcluirProfissionalSaudeCommandHandlerTests()
         {
             _profissionalSaudeRepositoryMock = new Mock<IProfissionalSaudeRepository>();
-            _handler = new DeletarProfissionalSaudeCommandHandler(_profissionalSaudeRepositoryMock.Object);
+            _agendamentoRepository = new Mock<IAgendamentoRepository>();
+            _handler = new DeletarProfissionalSaudeCommandHandler(_profissionalSaudeRepositoryMock.Object, _agendamentoRepository.Object);
         }
 
         [Fact]

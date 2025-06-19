@@ -13,12 +13,14 @@ namespace Clude.TesteTecnico.API.Tests.Commands.Paciente
     public class ExcluirPacienteCommandHandlerTests
     {
         private readonly Mock<IPacienteRepository> _pacienteRepositoryMock;
+        private readonly Mock<IAgendamentoRepository> _agendamentoRepository;
         private readonly DeletarPacienteCommandHandler _handler;
 
         public ExcluirPacienteCommandHandlerTests()
         {
             _pacienteRepositoryMock = new Mock<IPacienteRepository>();
-            _handler = new DeletarPacienteCommandHandler(_pacienteRepositoryMock.Object);
+            _agendamentoRepository = new Mock<IAgendamentoRepository>();
+            _handler = new DeletarPacienteCommandHandler(_pacienteRepositoryMock.Object, _agendamentoRepository.Object);
         }
 
         [Fact]

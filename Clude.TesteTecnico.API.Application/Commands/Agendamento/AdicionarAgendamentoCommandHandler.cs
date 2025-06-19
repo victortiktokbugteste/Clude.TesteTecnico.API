@@ -70,7 +70,7 @@ namespace Clude.TesteTecnico.API.Application.Commands.Agendamento
                 });
 
                 if (temSobreposicao)
-                    throw new SingleErrorException("Já existe um agendamento para este profissional neste horário.");
+                    throw new SingleErrorException("Ja existe um agendamento para este profissional neste horario.");
 
                 var agendamentoCriado = await _agendamentoRepository.AddAsync(agendamento);
                 scope.Complete();

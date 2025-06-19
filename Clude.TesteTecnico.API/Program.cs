@@ -63,7 +63,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactApp",
         builder =>
         {
-            builder.WithOrigins("http://localhost:3000")
+            builder.WithOrigins("http://localhost:3000",
+                    "https://cludetestfront.azurewebsites.net")
                    .AllowAnyMethod()
                    .AllowAnyHeader();
         });
@@ -118,24 +119,30 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseSwagger(c =>
 {
-    app.UseSwagger(c =>
-    {
-        c.SerializeAsV2 = false;
-    });
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Clude API V1");
-        c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
-    });
-}
+    c.SerializeAsV2 = false;
+});
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Clude API V1");
+    c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+});
 
 
 app.UseCors("AllowReactApp");
 
-app.UseHttpsRedirection();
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path == "/")
+    {
+        context.Response.Redirect("/swagger");
+        return;
+    }
+    await next();
+});
+
+//app.UseHttpsRedirection();
 
 // Adiciona o middleware de log de autenticação após a autenticação
 app.UseMiddleware<AuthenticationLoggingMiddleware>();
