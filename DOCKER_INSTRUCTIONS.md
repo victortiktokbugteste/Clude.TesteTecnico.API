@@ -21,8 +21,8 @@ git --version
 
 ### 1. **Clone o Repositório**
 ```bash
-git clone https://github.com/victortiktokbugteste/CludeTest.git
-cd CludeTest
+git clone https://github.com/victortiktokbugteste/Clude.TesteTecnico.API.git
+cd Clude.TesteTecnico.API
 ```
 
 ### 2. **Executar com Docker Compose**
@@ -56,7 +56,7 @@ Após a execução, os seguintes serviços estarão disponíveis:
 - **Username**: `admin`
 - **Password**: `123`
 
-### **SQL Server**
+### **SQL Server DOCKER**
 - **Server**: `localhost,1433`
 - **Database**: `CludeTesteTecnicoAPI`
 - **Username**: `sa`
@@ -131,7 +131,7 @@ As configurações estão definidas no `docker-compose.yml`. Principais variáve
 - `JwtSettings__SecretKey`: Chave secreta para JWT
 
 ### **Portas**
-- **API**: 5000 (HTTP) / 5001 (HTTPS)
+- **API**: 5000 (HTTP)
 - **SQL Server**: 1433
 - **Worker Service**: Execução em background
 
@@ -214,4 +214,3 @@ Após executar com sucesso:
 
 ---
 
-**Boa sorte no teste técnico! 🚀** 

@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # SQL Server
   sqlserver:
@@ -15,11 +13,6 @@ services:
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
       - clude-network
-    healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourStrong@Passw0rd -Q 'SELECT 1' || exit 1"]
-      interval: 10s
-      timeout: 3s
-      retries: 10
 
   # Script de inicialização do banco
   init-db:
@@ -33,8 +26,7 @@ services:
     volumes:
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     depends_on:
-      sqlserver:
-        condition: service_healthy
+      - sqlserver
     networks:
       - clude-network
     restart: "no"
@@ -44,8 +36,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: clude-api:latest
     ports:
-      - "5000:80"
+      - "5000:8080"
       - "5001:443"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -54,8 +47,7 @@ services:
       - ServiceBus__QueueName=emailsagendamento
       - JwtSettings__SecretKey=9UAm/9sVBYdm3tq1vzjwIphzcRL59T4//i7h/8urzh5r6dCzcsAZuWKuWOP9fyhQcMKy/nY8L5IBlu+bExESdQ==
     depends_on:
-      init-db:
-        condition: service_completed_successfully
+      - init-db
     networks:
       - clude-network
     restart: unless-stopped
@@ -65,14 +57,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.worker
+    image: clude-worker:latest
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=CludeTesteTecnicoAPI;User Id=sa;Password=YourStrong@Passw0rd;Trusted_Connection=False;Encrypt=False;TrustServerCertificate=True;
       - ServiceBus__ConnectionString=Endpoint=sb://cludetesteapi.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=fO0cDSUNGNvkfVOQ1y9USgpVJ+mS7hrdy+ASbDRJJKk=
       - ServiceBus__QueueName=emailsagendamento
     depends_on:
-      api:
-        condition: service_started
+      - api
     networks:
       - clude-network
     restart: unless-stopped

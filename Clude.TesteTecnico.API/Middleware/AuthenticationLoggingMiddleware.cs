@@ -18,36 +18,43 @@ namespace Clude.TesteTecnico.API.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var originalStatusCode = context.Response.StatusCode;
-
-            await _next(context);
-
-            if (context.Response.StatusCode == (int)HttpStatusCode.Unauthorized)
+            try
             {
-                var log = new LogDto
+                await _next(context);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                if (context.Response.StatusCode == (int)HttpStatusCode.Unauthorized)
                 {
-                    CreateDate = DateTime.Now,
-                    StatusCode = context.Response.StatusCode,
-                    Method = context.Request.Method,
-                    Trace = context.Request.Path,
-                    Exception = "Unauthorized: Token inválido ou não fornecido"
-                };
+                    var log = new LogDto
+                    {
+                        CreateDate = DateTime.Now,
+                        StatusCode = context.Response.StatusCode,
+                        Method = context.Request.Method,
+                        Trace = context.Request.Path,
+                        Exception = "Unauthorized: Token inválido ou não fornecido"
+                    };
 
-                await _logService.RegistrarAsync(log);
+                    await _logService.RegistrarAsync(log);
 
-                // Retorna resposta de erro de validação
-                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                context.Response.ContentType = "application/json";
+                    // Retorna resposta de erro de validação
+                    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    context.Response.ContentType = "application/json";
 
-                var response = new
-                {
-                    errors = new {
-                        field = "Login",
-                        message = "Não autorizado."
-                    }
-                };
+                    var response = new
+                    {
+                        errors = new {
+                            field = "Login",
+                            message = "Não autorizado."
+                        }
+                    };
 
-                await context.Response.WriteAsJsonAsync(response);
+                    await context.Response.WriteAsJsonAsync(response);
+                }
             }
         }
     }

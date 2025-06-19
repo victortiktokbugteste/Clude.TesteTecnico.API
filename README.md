@@ -1,13 +1,11 @@
 # CLUDE TESTE TÉCNICO - API
 
-https://cludetesteapi.azurewebsites.net
+api em nuvem: https://cludetesteapi.azurewebsites.net
 
 Esse projeto é responsável por processar toda busca, inserção, atualização, exclusão, de pacientes, profissionais de saúde, agendamentos da nossa clínica CLUDE.
 Ele é o motor da nossa aplicação, foi feito aplicando príncipios de Código Limpo, separando bem as responsabilidades de cada classe, 
 aplicando as regras de negócio que foram solicitadas no escopo do teste.
 
-!!! O Service Bus eu não publiquei como web application, mas você consegue rodar ele se deixar ele como projeto de inicialização, ele é o "WorkerService".
-Também tem o projeto Clude.TesteTecnico.API.Tests com alguns testes implementados.
 
 # Senha que é solicitada caso queira chamar o endpoint api/Auth/login
 username:admin, password:123
@@ -35,9 +33,27 @@ docker-compose up --build -d
 - **Swagger UI**: http://localhost:5000/swagger
 - **SQL Server**: localhost:1433
 
-### **Credenciais**
+### **Credenciais (LOGIN API JWT)**
 - **Username**: `admin`
 - **Password**: `123`
+
+### **Credenciais (LOGIN SQL SERVER NUVEM)**
+Server=tcp:cludeapi.database.windows.net,1433; Database=CludeTesteTecnicoAPI; User Id=victor; Password=@Dev2025;Trusted_Connection=False;Encrypt=True;
+
+### **Credenciais (LOGIN SQL SERVER DOCKER)**
+- **Servidor**: `localhost,1433`
+- **Username**: `sa`
+- **Password**: `YourStrong@Passw0rd`
+
+### WorkerService (Service Bus)
+	
+1. **DOCKER:** 
+	É uma das imagens que o docker-compose up --build vai gerar, o nome dela vai ser clude-worker.
+	Se ela tiver ativa, ela vai executar automaticamente, sempre que criar novo agendamento, ele vai pegar a mensagem da fila de emailsagendamento e vai marcar no banco como se o email tivesse sido enviado.
+	
+2. **SE EXECUTAR O PROJETO PELO VISUAL STUDIO:** 
+	CASO QUEIRA VER O FUNCIONAMENTO, PODE COLOCAR O PROJETO WORKERSERVICE COMO SENDO DE INICIALIZAÇÃO E EXECUTAR A AÇÃO DE CRIAR O AGENDAMENTO. (Nesse caso ele atualiza o banco sql server da azure e não o local do docker).
+	
 
 📖 **Instruções detalhadas**: Veja [DOCKER_INSTRUCTIONS.md](DOCKER_INSTRUCTIONS.md)
 
@@ -123,7 +139,12 @@ docker-compose up --build -d
 
 # SCRIPTS DE BANCO
 Na pasta Scripts tem o script que cria o banco e as tabelas que usamos.
-Para conectar no banco do servidor sql: Server=tcp:cludeapi.database.windows.net,1433; Database=CludeTesteTecnicoAPI; User Id=victor; Password=@Dev2025;Trusted_Connection=False;Encrypt=True;
+Para conectar no banco do servidor sql que está sendo usado pelo site que fiz deploy: Server=tcp:cludeapi.database.windows.net,1433; Database=CludeTesteTecnicoAPI; User Id=victor; Password=@Dev2025;Trusted_Connection=False;Encrypt=True;
+
+Para se conectar rodando a imagem pelo docker, se ela estiver rodando pode conectar no SSMS usando:
+localhost,1433
+login: sa
+password: YourStrong@Passw0rd
 
 # LOGS DE ERROS
 Ficam na tabela ApplicationMiddlewareLogError, ela intercepta os erros que aconteceram na nossa aplicação através dos nossos middlewares.
