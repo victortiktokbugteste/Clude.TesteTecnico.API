@@ -107,32 +107,32 @@ docker-compose up --build -d
 
 ```mermaid
 flowchart TD
-    A[Clude.TesteTecnico.API<br/>(Presentation Layer)]
-    B[Clude.TesteTecnico.API.Application<br/>(Application Layer)]
-    C[Clude.TesteTecnico.API.Domain<br/>(Domain Layer)]
-    D[Clude.TesteTecnico.API.Infrastructure<br/>(Infrastructure Layer)]
+    A[Clude.TesteTecnico.API\n(Presentation Layer)]
+    B[Clude.TesteTecnico.API.Application\n(Application Layer)]
+    C[Clude.TesteTecnico.API.Domain\n(Domain Layer)]
+    D[Clude.TesteTecnico.API.Infrastructure\n(Infrastructure Layer)]
 
     subgraph API [ ]
-        A1[Controllers:<br/>- AuthController<br/>- PacienteController<br/>- ProfissionalSaudeController<br/>- AgendaController]
-        A2[Middlewares:<br/>- RequestLoggingMiddleware<br/>- AuthenticationLoggingMiddleware]
+        A1[Controllers:\n- AuthController\n- PacienteController\n- ProfissionalSaudeController\n- AgendaController]
+        A2[Middlewares:\n- RequestLoggingMiddleware\n- AuthenticationLoggingMiddleware]
         A1 --> A2
     end
 
     subgraph Application [ ]
-        B1[Commands/Queries<br/>+ Handlers<br/>+ Validators<br/>+ DTOs]
-        B2[MediatR (CQRS Pattern)<br/>FluentValidation]
+        B1[Commands/Queries\n+ Handlers\n+ Validators\n+ DTOs]
+        B2[MediatR (CQRS Pattern)\nFluentValidation]
         B1 --> B2
     end
 
     subgraph Domain [ ]
-        C1[Entities:<br/>- Agendamento<br/>- Paciente<br/>- ProfissionalSaude]
-        C2[Interfaces:<br/>- IRepository<br/>- IAgendamentoRepository<br/>- Domain Services & Utils]
+        C1[Entities:\n- Agendamento\n- Paciente\n- ProfissionalSaude]
+        C2[Interfaces:\n- IRepository\n- IAgendamentoRepository\n- Domain Services & Utils]
         C1 --> C2
     end
 
     subgraph Infrastructure [ ]
-        D1[Repositories<br/>+ Services<br/>+ External Integrations]
-        D2[Dapper (Data Access)<br/>Azure Service Bus<br/>Logging Services<br/>JWT Authentication]
+        D1[Repositories\n+ Services\n+ External Integrations]
+        D2[Dapper (Data Access)\nAzure Service Bus\nLogging Services\nJWT Authentication]
         D1 --> D2
     end
 
