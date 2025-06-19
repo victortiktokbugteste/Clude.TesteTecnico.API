@@ -7,10 +7,12 @@ using Clude.TesteTecnico.API.Application.Interfaces;
 using Clude.TesteTecnico.API.Application.Models;
 using Clude.TesteTecnico.API.Domain.Entities;
 using Clude.TesteTecnico.API.Domain.Interfaces;
+using Clude.TesteTecnico.API.Infrastructure;
 using Clude.TesteTecnico.API.Infrastructure.Repositories;
 using Clude.TesteTecnico.API.Infrastructure.Services;
 using Clude.TesteTecnico.API.Middleware;
 using FluentValidation;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -38,6 +40,10 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 
+builder.Services.Configure<ServiceBusSettings>(
+    builder.Configuration.GetSection("ServiceBus"));
+
+builder.Services.AddSingleton<IMessageBusService, MessageBusService>();
 
 builder.Services.AddMediatR(cfg =>
 {

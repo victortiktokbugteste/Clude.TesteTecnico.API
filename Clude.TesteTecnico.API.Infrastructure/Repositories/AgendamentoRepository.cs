@@ -232,5 +232,13 @@ namespace Clude.TesteTecnico.API.Infrastructure.Repositories
             var sql = "DELETE FROM Agendamento WHERE ProfissionalSaudeId = @ProfissionalSaudeId";
             return await db.ExecuteScalarAsync<bool>(sql, new { ProfissionalSaudeId = profissionalSaudeId });
         }
+
+        public async Task<bool> MarcarEmailComoEnviado(int agendamentoId)
+        {
+            using var db = new SqlConnection(_connectionString);
+            var sql = "UPDATE Agendamento SET EmailEnviadoPeloServiceBus = 1 WHERE Id = @AgendamentoId ";
+            var rowsAffected = await db.ExecuteAsync(sql, new { AgendamentoId = agendamentoId });
+            return rowsAffected > 0;
+        }
     }
 }

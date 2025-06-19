@@ -22,11 +22,15 @@ namespace Clude.TesteTecnico.API.Application.Commands.Agendamento
         [SwaggerSchema(Description = "Data de Agendamento para cadastro")]
         public DateTime? ScheduleDate { get; set; }
 
-        public AdicionarAgendamentoCommand(int? pacienteId, int? profissionalSaudeId, DateTime? scheduleDate)
+        [SwaggerSchema(Description = "Email do profissional para alertar sobre o agendamento")]
+        public string ProfissionalEmailToReceiveNotification { get; set; }
+
+        public AdicionarAgendamentoCommand(int? pacienteId, int? profissionalSaudeId, DateTime? scheduleDate, string profissionalEmailToReceiveNotification)
         {
             PacienteId = pacienteId;
             ProfissionalSaudeId = profissionalSaudeId;
             ScheduleDate = scheduleDate;
+            ProfissionalEmailToReceiveNotification = profissionalEmailToReceiveNotification;
         }
     }
 }

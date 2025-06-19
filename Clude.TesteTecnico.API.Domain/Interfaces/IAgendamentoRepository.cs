@@ -10,5 +10,6 @@ namespace Clude.TesteTecnico.API.Domain.Interfaces
 
         Task<bool> DeletarConsultasDoPaciente(int pacienteId);
         Task<bool> DeletarConsultasDoProfissionalDeSaude(int profissionalSaudeId);
+        Task<bool> MarcarEmailComoEnviado(int agendamentoId);
     }
 }

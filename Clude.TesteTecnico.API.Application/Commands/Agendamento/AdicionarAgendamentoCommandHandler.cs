@@ -20,16 +20,19 @@ namespace Clude.TesteTecnico.API.Application.Commands.Agendamento
     {
         private readonly IAgendamentoRepository _agendamentoRepository;
         private readonly IValidator<AgendamentoEntity> _validator;
+        private readonly IMessageBusService _messageBus;
         public AdicionarAgendamentoCommandHandler(IAgendamentoRepository agendamentoRepository,
-            IValidator<AgendamentoEntity> validator)
+            IValidator<AgendamentoEntity> validator,
+            IMessageBusService messageBus)
         {
             _agendamentoRepository = agendamentoRepository;
             _validator = validator;
+            _messageBus = messageBus;
         }
 
         public async Task<AdicionarAgendamentoResponse> Handle(AdicionarAgendamentoCommand request, CancellationToken cancellationToken)
         {
-            using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
             try
             {
                 var agendamento = new AgendamentoEntity
@@ -64,16 +67,24 @@ namespace Clude.TesteTecnico.API.Application.Commands.Agendamento
                     var inicioExistente = a.ScheduleDate;
                     var fimExistente = inicioExistente.AddMinutes(a.TempoDuracaoAtendimentoMinutos);
 
-                    return (horarioInicio >= inicioExistente && horarioInicio < fimExistente) || // Novo agendamento começa durante um existente
-                           (horarioFim > inicioExistente && horarioFim <= fimExistente) || // Novo agendamento termina durante um existente
-                           (horarioInicio <= inicioExistente && horarioFim >= fimExistente); // Novo agendamento engloba um existente
+                    return (horarioInicio >= inicioExistente && horarioInicio < fimExistente) || 
+                           (horarioFim > inicioExistente && horarioFim <= fimExistente) || 
+                           (horarioInicio <= inicioExistente && horarioFim >= fimExistente); 
                 });
 
                 if (temSobreposicao)
                     throw new SingleErrorException("Ja existe um agendamento para este profissional neste horario.");
 
                 var agendamentoCriado = await _agendamentoRepository.AddAsync(agendamento);
-                scope.Complete();
+
+                // Envia para o Service Bus
+                await _messageBus.EnviarMensagemAsync(new
+                {
+                    Id = agendamentoCriado.Id,
+                    CreateDate = agendamento.CreateDate,
+                    ScheduleDate = request.ScheduleDate,
+                    ProfissionalSaudeEmail = request.ProfissionalEmailToReceiveNotification
+                });
 
                 return AdicionarAgendamentoResponse.FromDomain(agendamentoCriado);
             }

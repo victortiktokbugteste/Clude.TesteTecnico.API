@@ -30,7 +30,8 @@ PacienteId INT,
 ProfissionalSaudeId INT,
 CreateDate DATETIME,
 ScheduleDate DATETIME,
-TempoDuracaoAtendimentoMinutos INT
+TempoDuracaoAtendimentoMinutos INT,
+EmailEnviadoPeloServiceBus BIT DEFAULT 0
 
 FOREIGN KEY (PacienteId) REFERENCES Paciente(Id),
 FOREIGN KEY (ProfissionalSaudeId) REFERENCES ProfissionalSaude(Id)
@@ -48,4 +49,3 @@ Trace nvarchar(max),
 StatusCode int
 
 );
-

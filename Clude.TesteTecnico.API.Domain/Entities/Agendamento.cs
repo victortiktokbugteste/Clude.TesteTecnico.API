@@ -16,5 +16,6 @@ namespace Clude.TesteTecnico.API.Domain.Entities
         public DateTime CreateDate { get; set; }
         public DateTime ScheduleDate { get; set; }
         public int TempoDuracaoAtendimentoMinutos { get; set; }
+        public bool EmailEnviadoPeloServiceBus { get; set; }
     }
 }
