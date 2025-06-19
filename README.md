@@ -103,64 +103,47 @@ docker-compose up --build -d
 - **xUnit + Moq** - Testes unitários
 - **Docker** - Containerização da aplicação
 
+## Arquitetura do projeto (Mermaid)
 
+```mermaid
+flowchart TD
+    A[Clude.TesteTecnico.API<br/>(Presentation Layer)]
+    B[Clude.TesteTecnico.API.Application<br/>(Application Layer)]
+    C[Clude.TesteTecnico.API.Domain<br/>(Domain Layer)]
+    D[Clude.TesteTecnico.API.Infrastructure<br/>(Infrastructure Layer)]
 
-# Arquitetura do projeto DESENHO
+    subgraph API [ ]
+        A1[Controllers:<br/>- AuthController<br/>- PacienteController<br/>- ProfissionalSaudeController<br/>- AgendaController]
+        A2[Middlewares:<br/>- RequestLoggingMiddleware<br/>- AuthenticationLoggingMiddleware]
+        A1 --> A2
+    end
 
-┌─────────────────────────────────────────────────────────────┐
-│                    Clude.TesteTecnico.API                  │
-│                    (Presentation Layer)                     │
-├─────────────────────────────────────────────────────────────┤
-│                Controllers + Middleware                     │
-│                - AuthController                             │
-│                - PacienteController                         │
-│                - ProfissionalSaudeController                │
-│                - AgendaController                           │
-│                - RequestLoggingMiddleware                   │
-│                - AuthenticationLoggingMiddleware            │
-└─────────────────────────────────────────────────────────────┘
-                                │
-                                ▼
-┌─────────────────────────────────────────────────────────────┐
-│              Clude.TesteTecnico.API.Application            │
-│                   (Application Layer)                       │
-├─────────────────────────────────────────────────────────────┤
-│  Commands/Queries + Handlers + Validators + DTOs           │
-│  - MediatR (CQRS Pattern)                                  │
-│  - FluentValidation                                        │
-│  - Command/Query Handlers                                  │
-│  - Response Models                                         │
-└─────────────────────────────────────────────────────────────┘
-                                │
-                                ▼
-┌─────────────────────────────────────────────────────────────┐
-│                Clude.TesteTecnico.API.Domain               │
-│                    (Domain Layer)                          │
-├─────────────────────────────────────────────────────────────┤
-│  Entities + Interfaces + Domain Logic                      │
-│  - Agendamento, Paciente, ProfissionalSaude               │
-│  - IRepository<T>, IAgendamentoRepository, etc.           │
-│  - Domain Services & Utils                                 │
-└─────────────────────────────────────────────────────────────┘
-                                │
-                                ▼
-┌─────────────────────────────────────────────────────────────┐
-│             Clude.TesteTecnico.API.Infrastructure          │
-│                  (Infrastructure Layer)                     │
-├─────────────────────────────────────────────────────────────┤
-│  Repositories + Services + External Integrations           │
-│  - Dapper (Data Access)                                    │
-│  - Azure Service Bus                                       │
-│  - Logging Services                                        │
-│  - JWT Authentication                                      │
-└─────────────────────────────────────────────────────────────┘
+    subgraph Application [ ]
+        B1[Commands/Queries<br/>+ Handlers<br/>+ Validators<br/>+ DTOs]
+        B2[MediatR (CQRS Pattern)<br/>FluentValidation]
+        B1 --> B2
+    end
 
+    subgraph Domain [ ]
+        C1[Entities:<br/>- Agendamento<br/>- Paciente<br/>- ProfissionalSaude]
+        C2[Interfaces:<br/>- IRepository<br/>- IAgendamentoRepository<br/>- Domain Services & Utils]
+        C1 --> C2
+    end
 
+    subgraph Infrastructure [ ]
+        D1[Repositories<br/>+ Services<br/>+ External Integrations]
+        D2[Dapper (Data Access)<br/>Azure Service Bus<br/>Logging Services<br/>JWT Authentication]
+        D1 --> D2
+    end
+
+    A --> B
+    B --> C
+    C --> D
+```
 
 # SCRIPTS DE BANCO
 Na pasta Scripts tem o script que cria o banco e as tabelas que usamos.
 Para conectar no banco do servidor sql: Server=tcp:cludeapi.database.windows.net,1433; Database=CludeTesteTecnicoAPI; User Id=victor; Password=@Dev2025;Trusted_Connection=False;Encrypt=True;
-
 
 # LOGS DE ERROS
 Ficam na tabela ApplicationMiddlewareLogError, ela intercepta os erros que aconteceram na nossa aplicação através dos nossos middlewares.
