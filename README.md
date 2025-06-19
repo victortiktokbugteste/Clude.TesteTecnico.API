@@ -23,8 +23,8 @@ Para facilitar a execução do projeto, criamos uma solução Docker completa.
 ### **Opção 2: Comandos Manuais**
 ```bash
 # Clone o repositório
-git clone https://github.com/victortiktokbugteste/CludeTest.git
-cd CludeTest
+git clone https://github.com/victortiktokbugteste/Clude.TesteTecnico.API.git
+cd Clude.TesteTecnico.API
 
 # Execute com Docker Compose
 docker-compose up --build -d
@@ -41,27 +41,45 @@ docker-compose up --build -d
 
 📖 **Instruções detalhadas**: Veja [DOCKER_INSTRUCTIONS.md](DOCKER_INSTRUCTIONS.md)
 
-# Decisões técnicas EXPLICATIVO
+## Decisões técnicas EXPLICATIVO
 
-1 - Decidi usar Authorize com JWT sendo Bearer Token para tornar nossas controladoras seguras, que elas possam receber apenas requisições autorizadas.
-2 - Criei AuthenticationLoggingMiddleware para guardar as requisições e extourar a excessão pra Token inválido/login não autorizado.
-3 - Criei RequestLoggingMiddleware para guardar as requisições e extourar as excessões para quaisquer erros que possam ocorrer em nosso servidor, 
-desde validação de regra de negócio até à validação de entidades ou de quaisquer outros problemas.
-4 - Esses logs dos dois Middlewares são salvos na tabela ApplicationMiddlewareLogError do banco de dados, de uma forma que conseguimos rastrear depois,
-porém poderia utilizar facilmente Airbrake pra armazenar esses dados.
-5 - Apliquei um middleware que redireciona para o swagger caso chamar a url base da aplicação.
-6 - Adicionei o AddCors e UseCors para permitir nosso frontend chamar nossa api.
-7 - Toda minha aplicação eu separei as responsabilidades de cada classe, as controllers servem apenas para roteamento, usei o Mediatr para que cada endpoint tenha
-seu handler pra executar suas próprias regras de negócio.
-8 - Procurei documentar dentro das commands utilizando da biblioteca Swashbuckle e também procurei solicitar somente as propriedades necessárias do front para o backend.
-9 - Para separar ainda mais as responsabilidades de cada classe, utilizei o FluentValidator para fazer a validação da própria entidade dentro do Handler, pois dessa forma
-o handler só implementa código que realmente seja regra de negócio que não seja da entidade.
-10 - Os repositórios herdam uma interface destinada ao próprio repositório exemplo AgendamentoRepository : IAgendamentoRepository, dentro de IAgendamentoRepository tem metódos
-que são usados apenas por AgendamentoRepository porém a IAgendamentoRepository ainda herda IRepository<Agendamento> que é uma interface com metódos genéricos que podem ser usados
-em vários outros repositórios que tem metódos em comum.
-11 - Decidi aplicar Azure Service Bus para registrar quando um agendamento é adicionado, ele envia esse agendamento para a Azure, contendo o e-mail do profissional de saúde,
-a mensagem é escrita na fila emailsagendamento, e criei o projeto WorkerService que fica escutando essa fila, pega o registro e marca esse agendamento como se o email tivesse sido enviado.
-12 - Criei um projeto de testes unitários xunit para testar alguns casos se estavam lançando a validação do jeito correto, e pra isso utilizei a biblioteca Mock, pra simular repositório.
+1. **JWT Bearer Token:**  
+   Decidi usar Authorize com JWT sendo Bearer Token para tornar nossas controladoras seguras, permitindo que apenas requisições autorizadas sejam aceitas.
+
+2. **AuthenticationLoggingMiddleware:**  
+   Criei o middleware para guardar as requisições e estourar exceção para Token inválido/login não autorizado.
+
+3. **RequestLoggingMiddleware:**  
+   Criei o middleware para guardar as requisições e estourar exceções para quaisquer erros que possam ocorrer no servidor, desde validação de regra de negócio até validação de entidades ou outros problemas.
+
+4. **Logs centralizados:**  
+   Os logs dos dois middlewares são salvos na tabela `ApplicationMiddlewareLogError` do banco de dados, permitindo rastreamento posterior. Poderia ser facilmente adaptado para usar Airbrake ou outro serviço.
+
+5. **Redirecionamento para Swagger:**  
+   Implementei um middleware que redireciona para o Swagger caso a URL base da aplicação seja chamada.
+
+6. **CORS:**  
+   Adicionei `AddCors` e `UseCors` para permitir que o frontend acesse a API.
+
+7. **Responsabilidade das controllers:**  
+   As controllers servem apenas para roteamento. Usei o MediatR para que cada endpoint tenha seu handler, responsável por executar suas próprias regras de negócio.
+
+8. **Documentação e contratos enxutos:**  
+   Documentei as commands usando Swashbuckle e solicito apenas as propriedades necessárias do frontend para o backend.
+
+9. **Validação com FluentValidation:**  
+   Utilizei FluentValidator para validar a entidade dentro do Handler, garantindo que o handler implemente apenas regras de negócio que não sejam da entidade.
+
+10. **Repository Pattern:**  
+    Os repositórios herdam uma interface específica, por exemplo:  
+    `AgendamentoRepository : IAgendamentoRepository`.  
+    Métodos exclusivos ficam na interface específica, mas ela também herda de `IRepository<Agendamento>`, que contém métodos genéricos reutilizáveis.
+
+11. **Azure Service Bus e Worker Service:**  
+    Usei Azure Service Bus para registrar quando um agendamento é adicionado. O agendamento é enviado para a Azure, contendo o e-mail do profissional de saúde, e a mensagem é escrita na fila `emailsagendamento`. O projeto WorkerService escuta essa fila, pega o registro e marca o agendamento como se o e-mail tivesse sido enviado.
+
+12. **Testes unitários:**  
+    Criei um projeto de testes unitários com xUnit para validar regras de negócio e uso de validação, utilizando Moq para simular repositórios.
 
 # Decisões técnicas RESUMO
 1. **JWT Bearer Token**: Para autenticação segura das APIs
