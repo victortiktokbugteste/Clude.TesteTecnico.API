@@ -1,4 +1,5 @@
 ﻿using Clude.TesteTecnico.API.Application.Commands.Paciente;
+using Clude.TesteTecnico.API.Application.Commands.Paciente.Responses;
 using Clude.TesteTecnico.API.Application.Queries.Paciente;
 using Clude.TesteTecnico.API.Application.Queries.Paciente.Responses;
 using Clude.TesteTecnico.API.Domain.Entities;
@@ -29,7 +30,7 @@ namespace Clude.TesteTecnico.API.Controllers
         )]
         [SwaggerResponse(201, "Paciente criado com sucesso", typeof(BuscarPacienteResponse))]
         [SwaggerResponse(400, "Erro ao criar o paciente")]
-        public async Task<ActionResult<Paciente>> AdicionarPaciente([FromBody] AdicionarPacienteCommand command)
+        public async Task<ActionResult<AdicionarPacienteResponse>> AdicionarPaciente([FromBody] AdicionarPacienteCommand command)
         {            
             var paciente = await _mediator.Send(command);
             return CreatedAtAction(nameof(BuscarPaciente), new { id = paciente.Id }, paciente);
@@ -42,7 +43,7 @@ namespace Clude.TesteTecnico.API.Controllers
         )]
         [SwaggerResponse(201, "Paciente atualizado com sucesso", typeof(BuscarPacienteResponse))]
         [SwaggerResponse(400, "Erro ao atualizar o paciente")]
-        public async Task<ActionResult<Paciente>> AtualizaPaciente([FromBody] AtualizaPacienteCommand command)
+        public async Task<ActionResult<AtualizaPacienteResponse>> AtualizaPaciente([FromBody] AtualizaPacienteCommand command)
         {
             var paciente = await _mediator.Send(command);
             return CreatedAtAction(nameof(BuscarPaciente), new { id = paciente.Id }, paciente);
@@ -55,7 +56,7 @@ namespace Clude.TesteTecnico.API.Controllers
         )]
         [SwaggerResponse(200, "Paciente encontrado com sucesso", typeof(BuscarPacienteResponse))]
         [SwaggerResponse(404, "Erro ao buscar o paciente")]
-        public async Task<ActionResult<Paciente>> BuscarPaciente([FromRoute] int id)
+        public async Task<ActionResult<BuscarPacienteResponse>> BuscarPaciente([FromRoute] int id)
         {
             var paciente = await _mediator.Send(new BuscarPacienteQuery(id));
 
@@ -85,7 +86,7 @@ namespace Clude.TesteTecnico.API.Controllers
         )]
         [SwaggerResponse(200, "Pacientes encontrados com sucesso", typeof(BuscarPacienteResponse))]
         [SwaggerResponse(400, "Erro ao buscar os pacientes")]
-        public async Task<ActionResult<List<Paciente>>> BuscarTodosPacientes()
+        public async Task<ActionResult<List<BuscarPacienteResponse>>> BuscarTodosPacientes()
         {
             var pacientes = await _mediator.Send(new BuscarTodosPacientesQuery());
 

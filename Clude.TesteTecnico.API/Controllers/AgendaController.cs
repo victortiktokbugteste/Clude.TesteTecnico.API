@@ -1,4 +1,5 @@
 ﻿using Clude.TesteTecnico.API.Application.Commands.Agendamento;
+using Clude.TesteTecnico.API.Application.Commands.Agendamento.Responses;
 using Clude.TesteTecnico.API.Application.Commands.Paciente;
 using Clude.TesteTecnico.API.Application.Queries.Agendamento;
 using Clude.TesteTecnico.API.Application.Queries.Agendamento.Responses;
@@ -33,7 +34,7 @@ namespace Clude.TesteTecnico.API.Controllers
           )]
         [SwaggerResponse(201, "Agendamento criado com sucesso", typeof(BuscarAgendamentoResponse))]
         [SwaggerResponse(400, "Erro ao criar o agendamento")]
-        public async Task<ActionResult<Agendamento>> AdicionarAgendamento([FromBody] AdicionarAgendamentoCommand command)
+        public async Task<ActionResult<AdicionarAgendamentoResponse>> AdicionarAgendamento([FromBody] AdicionarAgendamentoCommand command)
         {
             var agendamento = await _mediator.Send(command);
             return CreatedAtAction(nameof(BuscarAgendamento), new { id = agendamento.Id }, agendamento);
@@ -46,7 +47,7 @@ namespace Clude.TesteTecnico.API.Controllers
       )]
         [SwaggerResponse(201, "Agendamento atualizado com sucesso", typeof(BuscarAgendamentoResponse))]
         [SwaggerResponse(400, "Erro ao atualizar o agendamento")]
-        public async Task<ActionResult<Agendamento>> AtualizaAgendamento([FromBody] AtualizaAgendamentoCommand command)
+        public async Task<ActionResult<AtualizaAgendamentoResponse>> AtualizaAgendamento([FromBody] AtualizaAgendamentoCommand command)
         {
             var agendamento = await _mediator.Send(command);
             return CreatedAtAction(nameof(BuscarAgendamento), new { id = agendamento.Id }, agendamento);
@@ -59,7 +60,7 @@ namespace Clude.TesteTecnico.API.Controllers
            )]
         [SwaggerResponse(200, "Agendamento encontrado com sucesso", typeof(BuscarAgendamentoResponse))]
         [SwaggerResponse(404, "Erro ao buscar o agendamento")]
-        public async Task<ActionResult<Agendamento>> BuscarAgendamento([FromRoute] int id)
+        public async Task<ActionResult<BuscarAgendamentoResponse>> BuscarAgendamento([FromRoute] int id)
         {
             var agendamento = await _mediator.Send(new BuscarAgendamentoQuery(id));
 
@@ -89,7 +90,7 @@ namespace Clude.TesteTecnico.API.Controllers
      )]
         [SwaggerResponse(200, "Agendamentos encontrados com sucesso", typeof(BuscarAgendamentoResponse))]
         [SwaggerResponse(400, "Erro ao buscar os agendamentos")]
-        public async Task<ActionResult<List<Agendamento>>> BuscarTodosAgendamentos()
+        public async Task<ActionResult<List<BuscarAgendamentoResponse>>> BuscarTodosAgendamentos()
         {
             var agendamentos = await _mediator.Send(new BuscarTodosAgendamentosQuery());
 
@@ -107,7 +108,7 @@ namespace Clude.TesteTecnico.API.Controllers
             )]
         [SwaggerResponse(200, "Agendamentos do profissional encontrados com sucesso", typeof(BuscarAgendamentoResponse))]
         [SwaggerResponse(400, "Erro ao buscar os agendamentos do profissional de saúde")]
-        public async Task<ActionResult<List<Agendamento>>> BuscarAgendaProfissionalSaude([FromRoute] int id)
+        public async Task<ActionResult<List<BuscarAgendamentoResponse>>> BuscarAgendaProfissionalSaude([FromRoute] int id)
         {
             var agendamentos = await _mediator.Send(new BuscarAgendaProfissionalSaudeQuery(id));
 

@@ -1,4 +1,5 @@
 ﻿using Clude.TesteTecnico.API.Application.Commands.ProfissionalSaude;
+using Clude.TesteTecnico.API.Application.Commands.ProfissionalSaude.Responses;
 using Clude.TesteTecnico.API.Application.Queries.Paciente;
 using Clude.TesteTecnico.API.Application.Queries.Paciente.Responses;
 using Clude.TesteTecnico.API.Application.Queries.ProfissionalSaude;
@@ -31,7 +32,7 @@ namespace Clude.TesteTecnico.API.Controllers
         )]
         [SwaggerResponse(201, "Profissional de saúde criado com sucesso", typeof(BuscarProfissionalSaudeResponse))]
         [SwaggerResponse(400, "Erro ao criar o profissional de saúde")]
-        public async Task<ActionResult<ProfissionalSaude>> AdicionarProfissionalSaude([FromBody] AdicionarProfissionalSaudeCommand command)
+        public async Task<ActionResult<AdicionarProfissionalSaudeResponse>> AdicionarProfissionalSaude([FromBody] AdicionarProfissionalSaudeCommand command)
         {
             var paciente = await _mediator.Send(command);
             return CreatedAtAction(nameof(BuscarProfissionalSaude), new { id = paciente.Id }, paciente);
@@ -44,7 +45,7 @@ namespace Clude.TesteTecnico.API.Controllers
         )]
         [SwaggerResponse(201, "Profissional de saúde atualizado com sucesso", typeof(BuscarProfissionalSaudeResponse))]
         [SwaggerResponse(400, "Erro ao atualizar o profissional de saúde")]
-        public async Task<ActionResult<ProfissionalSaude>> AtualizaProfissionalSaude([FromBody] AtualizaProfissionalSaudeCommand command)
+        public async Task<ActionResult<AtualizaProfissionalSaudeResponse>> AtualizaProfissionalSaude([FromBody] AtualizaProfissionalSaudeCommand command)
         {
             var paciente = await _mediator.Send(command);
             return CreatedAtAction(nameof(BuscarProfissionalSaude), new { id = paciente.Id }, paciente);
@@ -57,7 +58,7 @@ namespace Clude.TesteTecnico.API.Controllers
         )]
         [SwaggerResponse(200, "Profissional de saúde encontrado com sucesso", typeof(BuscarProfissionalSaudeResponse))]
         [SwaggerResponse(404, "Erro ao buscar o profissional de saúde")]
-        public async Task<ActionResult<ProfissionalSaude>> BuscarProfissionalSaude([FromRoute] int id)
+        public async Task<ActionResult<BuscarProfissionalSaudeResponse>> BuscarProfissionalSaude([FromRoute] int id)
         {
             var paciente = await _mediator.Send(new BuscarProfissionalSaudeQuery(id));
 
@@ -87,7 +88,7 @@ namespace Clude.TesteTecnico.API.Controllers
         )]
         [SwaggerResponse(200, "Profissionais de saúde encontrados com sucesso", typeof(BuscarProfissionalSaudeResponse))]
         [SwaggerResponse(400, "Erro ao buscar os profissionais de saúde")]
-        public async Task<ActionResult<List<ProfissionalSaude>>> BuscarTodosProfissionaisSaude()
+        public async Task<ActionResult<List<BuscarProfissionalSaudeResponse>>> BuscarTodosProfissionaisSaude()
         {
             var profissionaisSaude = await _mediator.Send(new BuscarTodosProfissionaisSaudeQuery());
 
