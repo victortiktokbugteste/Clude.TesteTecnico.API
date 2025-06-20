@@ -34,7 +34,7 @@ namespace Clude.TesteTecnico.API.Controllers
           )]
         [SwaggerResponse(201, "Agendamento criado com sucesso", typeof(BuscarAgendamentoResponse))]
         [SwaggerResponse(400, "Erro ao criar o agendamento")]
-        public async Task<ActionResult<AdicionarAgendamentoResponse>> AdicionarAgendamento([FromBody] AdicionarAgendamentoCommand command)
+        public async Task<ActionResult<BuscarAgendamentoResponse>> AdicionarAgendamento([FromBody] AdicionarAgendamentoCommand command)
         {
             var agendamento = await _mediator.Send(command);
             return CreatedAtAction(nameof(BuscarAgendamento), new { id = agendamento.Id }, agendamento);
@@ -47,7 +47,7 @@ namespace Clude.TesteTecnico.API.Controllers
       )]
         [SwaggerResponse(201, "Agendamento atualizado com sucesso", typeof(BuscarAgendamentoResponse))]
         [SwaggerResponse(400, "Erro ao atualizar o agendamento")]
-        public async Task<ActionResult<AtualizaAgendamentoResponse>> AtualizaAgendamento([FromBody] AtualizaAgendamentoCommand command)
+        public async Task<ActionResult<BuscarAgendamentoResponse>> AtualizaAgendamento([FromBody] AtualizaAgendamentoCommand command)
         {
             var agendamento = await _mediator.Send(command);
             return CreatedAtAction(nameof(BuscarAgendamento), new { id = agendamento.Id }, agendamento);

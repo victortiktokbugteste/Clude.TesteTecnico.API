@@ -32,7 +32,7 @@ namespace Clude.TesteTecnico.API.Controllers
         )]
         [SwaggerResponse(201, "Profissional de saúde criado com sucesso", typeof(BuscarProfissionalSaudeResponse))]
         [SwaggerResponse(400, "Erro ao criar o profissional de saúde")]
-        public async Task<ActionResult<AdicionarProfissionalSaudeResponse>> AdicionarProfissionalSaude([FromBody] AdicionarProfissionalSaudeCommand command)
+        public async Task<ActionResult<BuscarProfissionalSaudeResponse>> AdicionarProfissionalSaude([FromBody] AdicionarProfissionalSaudeCommand command)
         {
             var paciente = await _mediator.Send(command);
             return CreatedAtAction(nameof(BuscarProfissionalSaude), new { id = paciente.Id }, paciente);
@@ -45,7 +45,7 @@ namespace Clude.TesteTecnico.API.Controllers
         )]
         [SwaggerResponse(201, "Profissional de saúde atualizado com sucesso", typeof(BuscarProfissionalSaudeResponse))]
         [SwaggerResponse(400, "Erro ao atualizar o profissional de saúde")]
-        public async Task<ActionResult<AtualizaProfissionalSaudeResponse>> AtualizaProfissionalSaude([FromBody] AtualizaProfissionalSaudeCommand command)
+        public async Task<ActionResult<BuscarProfissionalSaudeResponse>> AtualizaProfissionalSaude([FromBody] AtualizaProfissionalSaudeCommand command)
         {
             var paciente = await _mediator.Send(command);
             return CreatedAtAction(nameof(BuscarProfissionalSaude), new { id = paciente.Id }, paciente);
