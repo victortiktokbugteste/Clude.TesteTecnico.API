@@ -12,8 +12,6 @@ username:admin, password:123
 
 ## 🐳 Execução com Docker (Recomendado)
 
-Para facilitar a execução do projeto, criamos uma solução Docker completa. 
-
 ### **Opção 1: Script Automático (Mais Fácil)**
 - **Windows**: Execute `start-docker.bat`
 - **Linux/Mac**: Execute `./start-docker.sh`
